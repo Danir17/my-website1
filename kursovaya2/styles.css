@@ -101,6 +101,8 @@ body.dark {
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -772,6 +774,191 @@ body.victory-glow {
   transition: color var(--dur) var(--ease-smooth);
 }
 
+@media (max-width: 720px) {
+  body {
+    font-size: 15px;
+  }
+
+  h1 {
+    font-size: 1.625rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+  }
+
+  .topbar {
+    padding: 12px max(14px, env(safe-area-inset-right, 0px)) 12px
+      max(14px, env(safe-area-inset-left, 0px));
+    flex-wrap: wrap;
+    gap: 10px;
+    row-gap: 8px;
+  }
+
+  .topbar .logo {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 1.125rem;
+  }
+
+  .topbar > .row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar > .row .btn {
+    width: auto;
+    min-height: 44px;
+    padding: 0 16px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    margin: 16px auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .card {
+    padding: 18px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+  }
+
+  .btn {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .row .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .reviews {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    gap: 12px;
+  }
+
+  .kpi {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .kpi .card {
+    padding: 16px;
+  }
+
+  .form {
+    max-width: none;
+  }
+
+  .attention-cells {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    max-width: min(100%, 340px);
+    margin-left: auto;
+    margin-right: auto;
+    gap: 8px;
+  }
+
+  .cell {
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 44px;
+    aspect-ratio: 1;
+  }
+
+  .schulte-board {
+    max-width: none;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .schulte-cell {
+    min-height: 0;
+    font-size: clamp(0.75rem, 3.8vw, 1rem);
+    padding: 2px;
+  }
+
+  .memory-sequence {
+    font-size: clamp(1rem, 5vw, 1.35rem);
+    letter-spacing: 0.15em;
+    overflow-wrap: anywhere;
+  }
+
+  .memory-sequence.is-hiding {
+    letter-spacing: 0.08em;
+  }
+
+  .message.victory-pulse {
+    font-size: 0.9375rem;
+  }
+
+  .schulte-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  main .card h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .footer {
+    padding: 20px max(16px, env(safe-area-inset-left, 0px))
+      max(24px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .review:hover {
+    box-shadow: var(--elev-1);
+  }
+
+  .trainer-card:hover {
+    box-shadow: var(--elev-2);
+  }
+}
+
+@media (max-width: 380px) {
+  h1 {
+    font-size: 1.45rem;
+  }
+
+  .card {
+    padding: 16px 14px;
+  }
+
+  .topbar .logo {
+    font-size: 1.05rem;
+  }
+
+  .attention-cells {
+    max-width: 100%;
+    gap: 6px;
+  }
+}
+
 @supports not (color: color-mix(in srgb, white 50%, black)) {
   .btn:hover {
     background: rgba(103, 80, 164, 0.08);
@@ -843,3 +1030,4 @@ body.victory-glow {
     transform: none;
   }
 }
+
