@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>MemoryFlow — Тренажёры</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="index.html">MemoryFlow</a>
+    <div class="row">
+      <a class="btn" href="profile.html">Профиль</a>
+      <button id="themeToggle" class="btn btn-ghost" type="button">Сменить тему</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1>Тренажеры</h1>
+      <p>Выберите тренажёр: внимание, логика, память или таблица Шульте.</p>
+    </section>
+
+    <section class="grid">
+      <article class="card trainer-card">
+        <h3>Игра на внимание</h3>
+        <p>Найдите целевые клетки за ограниченное время.</p>
+        <a class="btn btn-primary" href="game-attention.html">Начать</a>
+      </article>
+      <article class="card trainer-card">
+        <h3>Игра на логику</h3>
+        <p>Решите короткие логические задачи и получите баллы.</p>
+        <a class="btn btn-primary" href="game-logic.html">Начать</a>
+      </article>
+      <article class="card trainer-card">
+        <h3>Игра на память</h3>
+        <p>Запомните последовательность и повторите ее.</p>
+        <a class="btn btn-primary" href="game-memory.html">Начать</a>
+      </article>
+      <article class="card trainer-card">
+        <h3>Таблица Шульте</h3>
+        <p>Найдите числа от 1 до 25 по порядку на перемешанной сетке.</p>
+        <a class="btn btn-primary" href="game-schulte.html">Начать</a>
+      </article>
+    </section>
+
+    <section class="card">
+      <a class="btn" href="profile.html">Перейти в профиль</a>
+    </section>
+  </main>
+
+  <footer class="footer">MemoryFlow © 2026</footer>
+  <script src="script.js"></script>
+</body>
+</html>

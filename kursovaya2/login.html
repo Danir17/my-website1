@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>MemoryFlow — Авторизация</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="index.html">MemoryFlow</a>
+    <button id="themeToggle" class="btn btn-ghost" type="button">Сменить тему</button>
+  </header>
+
+  <main class="container">
+    <section class="card form">
+      <h1>Авторизация</h1>
+      <form id="loginForm">
+        <label class="field">Email
+          <input id="loginEmail" type="email" required>
+        </label>
+        <label class="field">Пароль
+          <input id="loginPassword" type="password" required>
+        </label>
+        <button class="btn btn-primary" type="submit">Войти</button>
+      </form>
+      <p class="message" id="loginMessage"></p>
+      <p>Нет аккаунта? <a href="register.html">Зарегистрироваться</a></p>
+    </section>
+  </main>
+
+  <footer class="footer">MemoryFlow © 2026</footer>
+  <script src="script.js"></script>
+</body>
+</html>

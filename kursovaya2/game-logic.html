@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>MemoryFlow — Игра на логику</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="trainers.html">MemoryFlow</a>
+    <button id="themeToggle" class="btn btn-ghost" type="button">Сменить тему</button>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1>Игра на логику</h1>
+      <p>Решите 5 логических задач.</p>
+      <button id="logicStart" class="btn btn-primary" type="button">Начать</button>
+      <h3 id="logicQuestion">Нажмите "Начать"</h3>
+      <div class="row" id="logicAnswers"></div>
+      <p class="message" id="logicMessage"></p>
+      <div class="row">
+        <a class="btn" href="trainers.html">К тренажерам</a>
+        <a class="btn" href="profile.html">В профиль</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">MemoryFlow © 2026</footer>
+  <script src="script.js"></script>
+  <script src="game-logic.js"></script>
+</body>
+</html>
