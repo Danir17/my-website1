@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>MemoryFlow — Профиль</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="logo" href="index.html">MemoryFlow</a>
+    <div class="row">
+      <a class="btn" href="trainers.html">К тренажерам</a>
+      <button id="themeToggle" class="btn btn-ghost" type="button">Сменить тему</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1>Профиль: <span id="profileName"></span></h1>
+      <div class="kpi">
+        <article class="card">
+          <h3>Сессии</h3>
+          <p class="value" id="totalSessions">0</p>
+        </article>
+        <article class="card">
+          <h3>Сумма лучших баллов</h3>
+          <p class="value" id="totalBest">0</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Прогресс</h2>
+      <div id="progressList" class="progress-list"></div>
+    </section>
+
+    <section class="card row">
+      <a class="btn" href="trainers.html">Назад к выбору тренажеров</a>
+      <button id="logoutBtn" class="btn" type="button">Выйти</button>
+    </section>
+  </main>
+
+  <footer class="footer">MemoryFlow © 2026</footer>
+  <script src="script.js"></script>
+</body>
+</html>
