@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИгроМаркет — Black & Red</title>
+    <style>
+        :root {
+            --bg-main: #121212;
+            --bg-dark: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --bg-deep: #0a0a0a;
+            --border: #2e2e2e;
+            --text: #e0e0e0;
+            --text-dim: #9a9a9a;
+            --accent: #ff4757;
+            --accent-strong: #d90429;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: var(--bg-main); color: var(--text); min-height: 100vh; }
+
+        /* ===== ШАПКА ===== */
+        header {
+            background-color: var(--bg-dark);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+        .logo-icon { width: 40px; height: 40px; }
+        .logo-text { font-size: 22px; font-weight: 800; letter-spacing: 2px; color: var(--accent); }
+
+        nav { position: relative; display: flex; gap: 24px; padding-bottom: 6px; user-select: none; }
+        .nav-link {
+            color: #b0b0b0; text-decoration: none; font-weight: 500; font-size: 14px;
+            padding: 4px 0; display: flex; align-items: center; gap: 6px; transition: color 0.15s;
+        }
+        .nav-link:hover { color: #fff; }
+        .nav-link.active { color: var(--accent); font-weight: 600; }
+
+        .nav-badge {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px;
+            background: var(--accent-strong); color: #fff; font-size: 11px; font-weight: 700;
+        }
+
+        .nav-indicator {
+            position: absolute; left: 0; bottom: 0; height: 2px;
+            background: var(--accent); border-radius: 2px;
+            pointer-events: none; will-change: transform, width;
+            transition: transform 0.25s ease, width 0.25s ease, opacity 0.2s ease;
+            z-index: 2;
+        }
+
+        .search-bar {
+            background-color: var(--bg-main); border: 1px solid var(--border); border-radius: 3px;
+            padding: 8px 12px 8px 34px; color: var(--text); width: 230px; outline: none; font-size: 13px;
+            transition: border-color 0.2s;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239a9a9a' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m21 21-4.5-4.5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: 10px center;
+        }
+        .search-bar:focus { border-color: var(--accent); }
+        .search-bar::placeholder { color: #777; }
+
+        .mobile-search-btn {
+            display: none; background: transparent; border: 1px solid var(--border); border-radius: 3px;
+            color: var(--text); padding: 8px 14px; cursor: pointer; font-size: 18px; line-height: 1;
+        }
+        .mobile-search-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .burger-btn {
+            display: none; background: transparent; border: 1px solid var(--border); border-radius: 3px;
+            color: var(--text); padding: 8px 12px; cursor: pointer; line-height: 0;
+            align-items: center; justify-content: center;
+        }
+        .burger-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .burger-btn svg { display: block; }
+
+        .user-actions { display: flex; gap: 12px; align-items: center; }
+
+        .btn {
+            padding: 7px 18px; border-radius: 3px; border: none; cursor: pointer;
+            font-weight: 600; font-size: 13px; letter-spacing: 0.4px;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .btn-primary { background: var(--accent-strong); color: #fff; }
+        .btn-primary:hover { background: var(--accent); }
+        .btn-outline { background-color: transparent; border: 1px solid var(--accent); color: var(--accent); }
+        .btn-outline:hover { background-color: var(--accent); color: var(--bg-dark); }
+
+        /* ===== МОБИЛЬНОЕ МЕНЮ ===== */
+        .drawer-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65);
+            opacity: 0; pointer-events: none; transition: opacity 0.2s ease; z-index: 2050;
+        }
+        .drawer-overlay.active { opacity: 1; pointer-events: auto; }
+
+        .mobile-drawer {
+            position: fixed; top: 0; left: 0; bottom: 0; width: 270px; max-width: 82vw;
+            background: var(--bg-dark); border-right: 1px solid var(--border);
+            transform: translateX(-100%); transition: transform 0.25s ease;
+            z-index: 2100; display: flex; flex-direction: column;
+        }
+        .mobile-drawer.active { transform: translateX(0); }
+
+        .mobile-drawer-close {
+            align-self: flex-end; margin: 16px 16px 10px; background: transparent;
+            border: 1px solid var(--border); color: var(--text); border-radius: 3px;
+            width: 34px; height: 34px; cursor: pointer; font-size: 16px; line-height: 1;
+        }
+        .mobile-drawer-close:hover { border-color: var(--accent); color: var(--accent); }
+
+        .mobile-drawer-title {
+            font-size: 12px; color: var(--text-dim); letter-spacing: 2px;
+            padding: 0 24px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px;
+        }
+
+        .mobile-drawer .nav-link {
+            padding: 14px 24px; font-size: 14px; width: 100%;
+            border-bottom: 1px solid rgba(46, 46, 46, 0.6);
+            transition: color 0.15s, background 0.15s;
+        }
+        .mobile-drawer .nav-link:hover { color: #fff; background: rgba(255, 71, 87, 0.05); }
+        .mobile-drawer .nav-link.active { color: var(--accent); background: rgba(255, 71, 87, 0.06); }
+
+        /* ===== ПОИСКОВЫЙ ОВЕРЛЕЙ ===== */
+        .search-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88);
+            display: none; align-items: flex-start; justify-content: center;
+            padding: 90px 20px 20px; z-index: 2000;
+        }
+        .search-overlay.active { display: flex; }
+        .search-overlay-inner { display: flex; gap: 10px; width: 100%; max-width: 560px; }
+        .search-overlay-input {
+            flex: 1; padding: 14px 18px; border: 2px solid var(--accent);
+            border-radius: 4px; background: var(--bg-main); color: var(--text);
+            font-size: 16px; outline: none;
+        }
+        .search-overlay-input::placeholder { color: #777; }
+        .search-overlay-close {
+            padding: 0 18px; background: transparent; border: 2px solid var(--border);
+            border-radius: 4px; color: var(--text); font-size: 18px; cursor: pointer;
+        }
+        .search-overlay-close:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* ===== ПАНЕЛИ ===== */
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-strip-container { max-width: 1400px; margin: 0 auto; padding: 30px 40px 0; }
+        .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 8px; }
+        .stat-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px;
+            padding: 16px 18px; display: flex; align-items: center; gap: 14px;
+        }
+        .stat-icon {
+            width: 46px; height: 46px; border-radius: 9px;
+            background: rgba(255, 71, 87, 0.10); border: 1px solid rgba(255, 71, 87, 0.22);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 21px; flex-shrink: 0;
+        }
+        .stat-content { flex: 1; min-width: 0; }
+        .stat-value {
+            font-size: 23px; font-weight: 800; color: #fff; line-height: 1.05; margin-bottom: 4px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums;
+        }
+        .stat-value .suffix { color: var(--accent); font-size: 16px; font-weight: 700; margin-left: 1px; }
+        .stat-label {
+            font-size: 11px; color: var(--text-dim); letter-spacing: 0.3px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .stat-live {
+            display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+            background: #4ade80; margin-right: 5px; vertical-align: middle;
+        }
+
+        /* ===== КОНТЕЙНЕР ===== */
+        .container {
+            display: flex; padding: 22px 40px 40px; gap: 28px;
+            max-width: 1400px; margin: 0 auto;
+        }
+        .container.single { display: block; }
+
+        .sidebar {
+            width: 250px; flex-shrink: 0; background-color: var(--bg-card);
+            padding: 18px; border-radius: 3px; height: fit-content; border: 1px solid var(--border);
+        }
+        .sidebar h3 { margin-bottom: 16px; color: #fff; font-size: 16px; letter-spacing: 0.5px; }
+
+        .filter-group { margin-bottom: 20px; }
+        .filter-group > label:first-child {
+            display: block; margin-bottom: 10px; color: var(--text-dim);
+            font-size: 13px; letter-spacing: 0.3px;
+        }
+        .filter-group label {
+            display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+            color: var(--text-dim); font-size: 13px; cursor: pointer; transition: color 0.15s;
+        }
+        .filter-group label:hover { color: #fff; }
+        .filter-group input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; cursor: pointer; }
+
+        .price-range { display: flex; gap: 8px; align-items: center; }
+        .price-range input {
+            width: 100%; padding: 6px 8px; background: var(--bg-main);
+            border: 1px solid var(--border); color: var(--text); border-radius: 3px;
+            outline: none; font-size: 13px;
+        }
+        .price-range input:focus { border-color: var(--accent); }
+
+        .main-content { flex: 1; min-width: 0; }
+
+        .catalog-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px; gap: 16px; flex-wrap: wrap;
+            position: relative; z-index: 20;
+        }
+        .catalog-header h2 { font-size: 22px; color: #fff; letter-spacing: 0.3px; }
+
+        /* ===== ВЫПАДАЮЩИЙ СПИСОК ===== */
+        .custom-select { position: relative; min-width: 210px; user-select: none; }
+        .custom-select-trigger {
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
+            gap: 14px; background-color: var(--bg-card); color: var(--text);
+            border: 1px solid var(--border); padding: 9px 12px; border-radius: 3px;
+            font-size: 13px; cursor: pointer; text-align: left;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .custom-select-trigger:hover { color: #fff; }
+        .custom-select.open .custom-select-trigger { border-color: var(--accent); color: #fff; }
+        .custom-select-value { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .custom-select-arrow {
+            color: var(--accent); font-size: 10px; line-height: 1;
+            transition: transform 0.2s ease; flex-shrink: 0;
+        }
+        .custom-select.open .custom-select-arrow { transform: rotate(180deg); }
+        .custom-select-menu {
+            position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 3px;
+            padding: 6px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            opacity: 0; visibility: hidden;
+            transition: opacity 0.15s ease, visibility 0.15s;
+            max-height: 280px; overflow-y: auto; z-index: 100;
+        }
+        .custom-select.open .custom-select-menu { opacity: 1; visibility: visible; }
+        .custom-select-option {
+            padding: 9px 12px; border-radius: 2px; font-size: 13px; color: var(--text);
+            cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; border-left: 2px solid transparent; outline: none;
+            transition: background 0.15s, color 0.15s;
+        }
+        .custom-select-option:hover, .custom-select-option:focus-visible {
+            background: rgba(255, 71, 87, 0.08); color: #fff;
+        }
+        .custom-select-option.selected {
+            color: var(--accent); background: rgba(255, 71, 87, 0.10); border-left-color: var(--accent);
+        }
+        .custom-select-option.selected::after {
+            content: "✓"; font-size: 11px; font-weight: 800; color: var(--accent); flex-shrink: 0;
+        }
+
+        /* ===== BENTO ===== */
+        .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 185px; gap: 14px; }
+
+        .tile {
+            position: relative; border-radius: 5px; overflow: hidden; cursor: pointer;
+            border: 1px solid var(--border); background: var(--bg-card); transition: border-color 0.2s;
+        }
+        .tile:hover { border-color: var(--accent); }
+        .tile-img {
+            position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;
+        }
+        .tile-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top,
+                rgba(8, 8, 8, 0.96) 0%, rgba(8, 8, 8, 0.70) 38%,
+                rgba(8, 8, 8, 0.08) 72%, transparent 100%);
+            z-index: 1;
+        }
+        .tile-content { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px 14px; z-index: 3; }
+        .tile-badge {
+            display: inline-block; padding: 3px 8px; border-radius: 3px;
+            background: var(--accent-strong); color: #fff; font-size: 9px; font-weight: 800;
+            letter-spacing: 0.6px; margin-bottom: 6px;
+        }
+        .tile-badge.free { background: #16a34a; color: #062314; }
+        .tile-title {
+            font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 3px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2;
+        }
+        .tile-meta {
+            font-size: 11px; color: var(--text-dim); white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; margin-bottom: 6px;
+        }
+        .tile-footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .tile-price { font-size: 14px; font-weight: 800; color: var(--accent); white-space: nowrap; }
+        .tile-rating { font-size: 11px; color: #fbbf24; white-space: nowrap; }
+
+        .tile-large { grid-column: span 2; grid-row: span 2; }
+        .tile-wide  { grid-column: span 2; }
+        .tile-small { grid-column: span 1; }
+
+        .tile-large .tile-content { padding: 22px 24px; }
+        .tile-large .tile-title   { font-size: 24px; margin-bottom: 5px; }
+        .tile-large .tile-meta    { font-size: 13px; margin-bottom: 10px; }
+        .tile-large .tile-price   { font-size: 20px; }
+        .tile-large .tile-rating  { font-size: 13px; }
+        .tile-large .tile-badge   { font-size: 10px; padding: 4px 10px; margin-bottom: 10px; }
+
+        .tile-wide .tile-content { padding: 16px 18px; }
+        .tile-wide .tile-title   { font-size: 18px; }
+        .tile-wide .tile-meta    { font-size: 12px; margin-bottom: 8px; }
+        .tile-wide .tile-price   { font-size: 17px; }
+
+        /* Кнопка "+" на плитке */
+        .tile-add {
+            position: absolute; top: 10px; left: 10px; z-index: 7;
+            width: 30px; height: 30px; border-radius: 50%; border: none;
+            background: rgba(8, 8, 8, 0.72); color: #fff;
+            font-size: 18px; font-weight: 700; line-height: 1; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, color 0.15s;
+        }
+        .tile-add:hover { background: var(--accent); }
+        .tile-add.in-cart { background: var(--accent); color: #fff; }
+        .tile-add.in-cart:hover { background: var(--accent-strong); }
+
+        /* Стрелки карусели */
+        .tile-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+            background: rgba(8, 8, 8, 0.78); color: #fff; font-size: 20px; line-height: 1;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.2s, background 0.2s; z-index: 6;
+        }
+        .tile-arrow.prev { left: 10px; }
+        .tile-arrow.next { right: 10px; }
+        .tile:hover .tile-arrow { opacity: 1; }
+        .tile-arrow:hover { background: var(--accent); color: var(--bg-dark); }
+
+        /* Точки */
+        .tile-dots {
+            position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;
+            z-index: 6; background: rgba(8, 8, 8, 0.60); padding: 4px 7px; border-radius: 10px;
+        }
+        .tile-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.35);
+            cursor: pointer; transition: background 0.15s;
+        }
+        .tile-dot.active { background: var(--accent); }
+
+        /* ===== БИБЛИОТЕКА / КАРТОЧКИ ===== */
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .game-card {
+            background-color: var(--bg-card); border-radius: 3px; overflow: hidden;
+            cursor: pointer; border: 1px solid var(--border); transition: border-color 0.2s;
+        }
+        .game-card:hover { border-color: var(--accent); }
+        .game-cover {
+            width: 100%; height: 220px; object-fit: cover; display: block; background: var(--bg-deep);
+        }
+        .game-info { padding: 14px; }
+        .game-title {
+            font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .game-genre { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+        .lib-meta {
+            display: flex; justify-content: space-between; font-size: 12px;
+            color: var(--text-dim); margin-top: 8px;
+        }
+        .lib-progress {
+            height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden;
+            margin: 10px 0 12px; border: 1px solid rgba(60, 60, 60, 0.6);
+        }
+        .lib-progress span { display: block; height: 100%; border-radius: 3px; background: var(--accent); }
+        .btn-play {
+            width: 100%; padding: 9px; border-radius: 3px; border: 1px solid var(--border);
+            background: var(--bg-deep); color: var(--text); font-weight: 600; font-size: 13px;
+            letter-spacing: 0.4px; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+        }
+        .btn-play:hover { background: var(--accent); border-color: var(--accent); color: var(--bg-dark); }
+
+        /* ===== КОРЗИНА ===== */
+        .cart-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+        .cart-items { display: flex; flex-direction: column; gap: 14px; }
+        .cart-item {
+            display: flex; gap: 14px; align-items: center; background: var(--bg-card);
+            border: 1px solid var(--border); border-radius: 3px; padding: 12px; transition: border-color 0.2s;
+        }
+        .cart-item:hover { border-color: var(--accent); }
+        .cart-item img {
+            width: 72px; height: 96px; object-fit: cover; border-radius: 3px; flex-shrink: 0;
+        }
+        .cart-item-info { flex: 1; min-width: 0; }
+        .cart-item-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+        .cart-item-genre { font-size: 12px; color: var(--text-dim); margin-bottom: 8px; }
+        .qty { display: inline-flex; align-items: center; gap: 8px; }
+        .qty button {
+            width: 26px; height: 26px; border-radius: 3px; border: 1px solid var(--border);
+            background: var(--bg-main); color: var(--text); cursor: pointer; font-size: 15px;
+            line-height: 1; transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+        .qty button:hover { background: var(--accent); border-color: var(--accent); color: var(--bg-dark); }
+        .qty-val { min-width: 20px; text-align: center; font-weight: 700; color: #fff; }
+        .cart-item-price {
+            font-size: 16px; font-weight: 700; color: var(--accent);
+            min-width: 110px; text-align: right;
+        }
+        .cart-remove {
+            background: transparent; border: 1px solid var(--border); color: var(--text-dim);
+            width: 30px; height: 30px; border-radius: 3px; cursor: pointer; font-size: 14px;
+            transition: border-color 0.15s, color 0.15s; flex-shrink: 0;
+        }
+        .cart-remove:hover { border-color: var(--accent); color: var(--accent); }
+
+        .cart-summary {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 3px;
+            padding: 20px; position: sticky; top: 100px;
+        }
+        .cart-summary h3 {
+            font-size: 15px; letter-spacing: 0.3px; color: var(--text-dim); margin-bottom: 10px;
+        }
+        .cart-total {
+            font-size: 28px; font-weight: 800; color: var(--accent);
+            margin-bottom: 18px; display: inline-block;
+        }
+        .cart-note { font-size: 12px; color: var(--text-dim); margin-top: 12px; line-height: 1.5; }
+
+        /* ===== ПОДДЕРЖКА ===== */
+        .support-layout { display: grid; grid-template-columns: 1fr 360px; gap: 26px; align-items: start; }
+        .faq { display: flex; flex-direction: column; gap: 10px; }
+        .faq-item {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 3px; overflow: hidden; transition: border-color 0.2s;
+        }
+        .faq-item:hover { border-color: #3a3a3a; }
+        .faq-item.open { border-color: var(--accent); }
+        .faq-q {
+            display: flex; justify-content: space-between; align-items: center; gap: 12px;
+            padding: 14px 16px; cursor: pointer; font-weight: 600; font-size: 14px;
+            color: #fff; transition: color 0.2s;
+        }
+        .faq-item.open .faq-q { color: var(--accent); }
+        .faq-chevron { transition: transform 0.25s ease; color: var(--accent); font-size: 13px; }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); }
+        .faq-a { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.25s ease; }
+        .faq-item.open .faq-a { grid-template-rows: 1fr; }
+        .faq-a > div {
+            overflow: hidden; padding: 0 16px; font-size: 13px;
+            color: var(--text-dim); line-height: 1.6;
+        }
+        .faq-item.open .faq-a > div { padding-bottom: 16px; }
+
+        .support-form {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 3px;
+            padding: 20px; display: flex; flex-direction: column; gap: 12px;
+        }
+        .support-form h3 { font-size: 15px; letter-spacing: 0.3px; color: #fff; margin-bottom: 4px; }
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.3px; }
+        .field input, .field textarea {
+            background: var(--bg-main); border: 1px solid var(--border); border-radius: 3px;
+            padding: 9px 11px; color: var(--text); font-size: 13px; font-family: inherit;
+            outline: none; resize: vertical; transition: border-color 0.2s;
+        }
+        .field input:focus, .field textarea:focus { border-color: var(--accent); }
+        .field textarea { min-height: 90px; }
+
+        /* ===== ТОСТ ===== */
+        .toast {
+            position: fixed; right: 24px; bottom: 24px;
+            background: var(--bg-card); border: 1px solid var(--accent); border-radius: 4px;
+            padding: 14px 20px; display: flex; align-items: center; gap: 10px;
+            font-size: 14px; color: #fff; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            transform: translateY(20px); opacity: 0; pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease; z-index: 500;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast-check {
+            width: 22px; height: 22px; border-radius: 50%; background: var(--accent);
+            color: var(--bg-dark); display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 13px; flex-shrink: 0;
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            grid-column: 1 / -1;
+            padding: 44px 20px;
+            text-align: center;
+            color: var(--text-dim);
+            background: var(--bg-card);
+            border: 1px dashed var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        /* ===== GAME DETAIL ===== */
+        .back-btn {
+            background: transparent; border: 1px solid var(--border); color: var(--text);
+            padding: 8px 14px; border-radius: 3px; cursor: pointer; margin-bottom: 20px;
+            font-size: 13px; transition: border-color 0.2s, color 0.2s;
+        }
+        .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .game-detail {
+            display: grid; grid-template-columns: 1.4fr 1fr; gap: 32px; margin-bottom: 40px;
+        }
+        .game-main-img-wrap {
+            position: relative; border-radius: 4px; overflow: hidden;
+            border: 1px solid var(--border); aspect-ratio: 16 / 9; background: var(--bg-deep);
+        }
+        .game-main-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .game-main-img-wrap .tile-arrow { opacity: 0.85; }
+        .game-main-img-wrap:hover .tile-arrow { opacity: 1; }
+
+        .game-thumbs { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .game-thumb {
+            width: 90px; height: 56px; object-fit: cover; border-radius: 3px;
+            border: 2px solid transparent; cursor: pointer; opacity: 0.6;
+            transition: border-color 0.2s, opacity 0.2s;
+        }
+        .game-thumb:hover { opacity: 1; }
+        .game-thumb.active { border-color: var(--accent); opacity: 1; }
+
+        .game-detail-badge-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .game-detail-badge-row:empty { display: none; }
+        .game-detail-title {
+            font-size: 30px; font-weight: 800; color: #fff; margin-bottom: 8px; line-height: 1.15;
+        }
+        .game-detail-rating { color: #fbbf24; font-size: 14px; margin-bottom: 14px; }
+        .game-detail-price {
+            font-size: 30px; font-weight: 800; color: var(--accent); margin-bottom: 20px;
+        }
+        .game-detail-actions { display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+        .game-detail-actions .btn { flex: 1; min-width: 140px; padding: 12px 20px; font-size: 14px; }
+
+        .game-detail-meta {
+            display: flex; flex-direction: column; gap: 8px; padding: 16px;
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px;
+            margin-bottom: 22px; font-size: 13px;
+        }
+        .game-detail-meta-row { display: flex; justify-content: space-between; color: var(--text-dim); gap: 12px; }
+        .game-detail-meta-row span:last-child { color: var(--text); font-weight: 500; text-align: right; }
+
+        .game-detail-subtitle { font-size: 16px; color: #fff; margin-bottom: 10px; letter-spacing: 0.3px; }
+        .game-detail-desc { color: var(--text-dim); line-height: 1.6; font-size: 14px; }
+
+        .related-title { font-size: 20px; color: #fff; margin-bottom: 16px; }
+
+        /* ===== АВТОРИЗАЦИЯ ===== */
+        .auth-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.78);
+            display: none; align-items: center; justify-content: center;
+            z-index: 3000; padding: 20px; backdrop-filter: blur(4px);
+        }
+        .auth-modal-overlay.active { display: flex; }
+
+        .auth-modal {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 6px; width: 100%; max-width: 420px;
+            padding: 28px 24px 24px; position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            animation: authModalIn 0.2s ease;
+        }
+        @keyframes authModalIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .auth-modal-close {
+            position: absolute; top: 12px; right: 12px;
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text); width: 30px; height: 30px; border-radius: 3px;
+            cursor: pointer; font-size: 14px; line-height: 1;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .auth-modal-close:hover { border-color: var(--accent); color: var(--accent); }
+
+        .auth-tabs {
+            display: flex; gap: 4px; margin-bottom: 22px;
+            border-bottom: 1px solid var(--border);
+        }
+        .auth-tab {
+            flex: 1; padding: 12px; background: transparent; border: none;
+            color: var(--text-dim); font-size: 14px; font-weight: 600;
+            cursor: pointer; position: relative; transition: color 0.15s;
+        }
+        .auth-tab:hover { color: #fff; }
+        .auth-tab.active { color: var(--accent); }
+        .auth-tab.active::after {
+            content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+            height: 2px; background: var(--accent);
+        }
+
+        .auth-form { display: flex; flex-direction: column; gap: 14px; }
+        .auth-form h3 { font-size: 16px; color: #fff; margin-bottom: 4px; letter-spacing: 0.3px; }
+        .auth-form .field { display: flex; flex-direction: column; gap: 6px; }
+        .auth-form .field label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.3px; }
+        .auth-form .field input {
+            background: var(--bg-main); border: 1px solid var(--border);
+            border-radius: 3px; padding: 10px 12px; color: var(--text);
+            font-size: 14px; outline: none; transition: border-color 0.2s;
+        }
+        .auth-form .field input:focus { border-color: var(--accent); }
+        .auth-form .btn { padding: 11px 20px; font-size: 14px; margin-top: 4px; }
+
+        .auth-error {
+            color: var(--accent); font-size: 13px; min-height: 16px;
+            line-height: 1.4;
+        }
+
+        .user-greeting {
+            color: var(--text); font-size: 13px; font-weight: 600;
+            padding: 6px 4px; white-space: nowrap;
+            max-width: 160px; overflow: hidden; text-overflow: ellipsis;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .user-greeting .user-avatar {
+            width: 26px; height: 26px; border-radius: 50%;
+            background: var(--accent-strong); color: #fff;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 800; flex-shrink: 0;
+        }
+
+        /* ===== АДАПТИВ ===== */
+        @media (max-width: 1100px) {
+            .bento-grid { grid-template-columns: repeat(3, 1fr); }
+            .tile-wide  { grid-column: span 2; }
+        }
+        @media (max-width: 1024px) {
+            .cart-layout, .support-layout { grid-template-columns: 1fr; }
+            .cart-summary { position: static; }
+            .stats-strip { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            header { padding: 10px 16px; gap: 8px; flex-wrap: nowrap; }
+            .logo { display: none; }
+            nav#mainNav { display: none; }
+            .burger-btn { display: flex; }
+            .mobile-search-btn { display: flex; align-items: center; justify-content: center; }
+            .search-bar { display: none; }
+            .user-actions { gap: 8px; margin-left: auto; }
+            .user-actions .btn { padding: 6px 10px; font-size: 11px; letter-spacing: 0.2px; }
+            .user-greeting { max-width: 100px; font-size: 11px; padding: 4px 2px; }
+            .user-greeting .user-avatar { width: 22px; height: 22px; font-size: 10px; }
+            .stats-strip-container { padding: 20px 20px 0; }
+            .custom-select { min-width: 170px; }
+            .custom-select-trigger { padding: 8px 10px; font-size: 12px; gap: 10px; }
+            .game-detail { grid-template-columns: 1fr; gap: 22px; }
+            .game-detail-title { font-size: 24px; }
+            .game-detail-price { font-size: 24px; }
+        }
+        @media (max-width: 420px) {
+            .user-actions { gap: 4px; }
+            .user-actions .btn { padding: 5px 7px; font-size: 10px; letter-spacing: 0; }
+            .custom-select { min-width: 0; width: 100%; }
+            .catalog-header { gap: 10px; }
+            .catalog-header h2 { font-size: 18px; }
+        }
+        @media (max-width: 720px) {
+            .bento-grid { grid-template-columns: repeat(2, 1fr); }
+            .tile-large { grid-column: span 2; grid-row: span 2; }
+            .tile-wide  { grid-column: span 2; }
+        }
+        @media (max-width: 500px) {
+            .bento-grid { grid-template-columns: 1fr; grid-auto-rows: 200px; }
+            .tile-large, .tile-wide, .tile-small { grid-column: span 1; grid-row: span 1; }
+            .tile-large .tile-title { font-size: 18px; }
+            .tile-large .tile-price { font-size: 16px; }
+            .stats-strip { grid-template-columns: 1fr; }
+            .container { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== МОБИЛЬНОЕ МЕНЮ ===== -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <aside class="mobile-drawer" id="mobileDrawer" aria-hidden="true">
+        <button class="mobile-drawer-close" id="drawerClose" aria-label="Закрыть меню">✕</button>
+        <div class="mobile-drawer-title">Меню</div>
+        <a href="#" class="nav-link active" data-tab="catalog">Каталог</a>
+        <a href="#" class="nav-link" data-tab="library">Библиотека</a>
+        <a href="#" class="nav-link" data-tab="cart">Корзина <span class="nav-badge" data-cart-count>0</span></a>
+        <a href="#" class="nav-link" data-tab="support">Поддержка</a>
+    </aside>
+
+    <!-- ===== ШАПКА ===== -->
+    <header>
+        <div class="logo">
+            <svg class="logo-icon" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#ff8a94"/>
+                        <stop offset="55%" stop-color="#ff4757"/>
+                        <stop offset="100%" stop-color="#a4161a"/>
+                    </linearGradient>
+                </defs>
+                <path d="M24 2 L43 12.5 L43 33.5 L24 44 L5 33.5 L5 12.5 Z"
+                      fill="url(#logoGrad)" stroke="#ffc9cd" stroke-width="1.2"/>
+                <rect x="12" y="18" width="24" height="14" rx="7" fill="#0d0d0d" opacity="0.92"/>
+                <path d="M16 25 H22 M19 22 V28" stroke="#ff4757" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="29" cy="23" r="1.6" fill="#ff4757"/>
+                <circle cx="32" cy="26" r="1.6" fill="#ff8a94"/>
+            </svg>
+            <span class="logo-text">ИгроМаркет</span>
+        </div>
+
+        <button class="burger-btn" id="burgerBtn" aria-label="Открыть меню">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+
+        <nav id="mainNav">
+            <span class="nav-indicator" id="navIndicator"></span>
+            <a href="#" class="nav-link active" data-tab="catalog">Каталог</a>
+            <a href="#" class="nav-link" data-tab="library">Библиотека</a>
+            <a href="#" class="nav-link" data-tab="cart">Корзина <span class="nav-badge" data-cart-count>0</span></a>
+            <a href="#" class="nav-link" data-tab="support">Поддержка</a>
+        </nav>
+
+        <input type="text" class="search-bar" placeholder="Поиск в магазине...">
+        <button class="mobile-search-btn" id="mobileSearchBtn" aria-label="Поиск">🔍</button>
+
+        <div class="user-actions" id="userActions"></div>
+    </header>
+
+    <!-- ===== КАТАЛОГ ===== -->
+    <section class="tab-panel active" data-panel="catalog">
+        <div class="stats-strip-container">
+            <div class="stats-strip">
+                <div class="stat-card">
+                    <div class="stat-icon">🎮</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><span data-counter="12480">0</span></div>
+                        <div class="stat-label">Игр в каталоге</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><span class="stat-live"></span><span data-counter="3217">0</span></div>
+                        <div class="stat-label">Игроков онлайн</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><span data-counter="98">0</span><span class="suffix">%</span></div>
+                        <div class="stat-label">Положительных отзывов</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚡</div>
+                    <div class="stat-content">
+                        <div class="stat-value"><span data-counter="1250">0</span><span class="suffix">K+</span></div>
+                        <div class="stat-label">Ключей продано</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <aside class="sidebar">
+                <h3>Фильтры</h3>
+
+                <div class="filter-group">
+                    <label>Жанр</label>
+                    <label><input type="checkbox" data-filter="genre" value="RPG"> RPG</label>
+                    <label><input type="checkbox" data-filter="genre" value="Шутер"> Шутер</label>
+                    <label><input type="checkbox" data-filter="genre" value="Стратегия"> Стратегия</label>
+                    <label><input type="checkbox" data-filter="genre" value="Инди"> Инди</label>
+                    <label><input type="checkbox" data-filter="genre" value="Экшен"> Экшен</label>
+                    <label><input type="checkbox" data-filter="genre" value="Симулятор"> Симулятор</label>
+                </div>
+
+                <div class="filter-group">
+                    <label>Платформа</label>
+                    <label><input type="checkbox" data-filter="platform" value="PC"> PC</label>
+                    <label><input type="checkbox" data-filter="platform" value="PlayStation 5"> PlayStation 5</label>
+                    <label><input type="checkbox" data-filter="platform" value="Xbox Series X"> Xbox Series X</label>
+                </div>
+
+                <div class="filter-group">
+                    <label>Цена (руб.)</label>
+                    <div class="price-range">
+                        <input type="number" id="minPrice" placeholder="от 0" min="0">
+                        <span>—</span>
+                        <input type="number" id="maxPrice" placeholder="до 5000" min="0">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" id="resetFilters" style="width: 100%; margin-top: 8px;">Сбросить</button>
+            </aside>
+
+            <main class="main-content">
+                <div class="catalog-header">
+                    <h2>Каталог игр</h2>
+                    <div class="custom-select" data-custom-select>
+                        <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="custom-select-value">По популярности</span>
+                            <span class="custom-select-arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="custom-select-menu" role="listbox" tabindex="-1">
+                            <div class="custom-select-option selected" role="option" tabindex="-1" data-sort="popular">По популярности</div>
+                            <div class="custom-select-option" role="option" tabindex="-1" data-sort="price-asc">По цене (возр.)</div>
+                            <div class="custom-select-option" role="option" tabindex="-1" data-sort="price-desc">По цене (убыв.)</div>
+                            <div class="custom-select-option" role="option" tabindex="-1" data-sort="date">По дате выхода</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bento-grid" id="bentoGrid"></div>
+            </main>
+        </div>
+    </section>
+
+    <!-- ===== БИБЛИОТЕКА ===== -->
+    <section class="tab-panel" data-panel="library">
+        <div class="container">
+            <aside class="sidebar">
+                <h3>Мой профиль</h3>
+                <div class="filter-group">
+                    <label>Уровень</label>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="lib-progress" style="flex:1; margin:6px 0;">
+                            <span style="width: 68%;"></span>
+                        </div>
+                        <span style="font-size:13px; color:#fff; font-weight:700;">24</span>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label>Статистика</label>
+                    <label style="pointer-events:none;">🎮 Игр в библиотеке: <span id="libGameCount">0</span></label>
+                    <label style="pointer-events:none;">⏱ Часов всего: 1 284</label>
+                    <label style="pointer-events:none;">🏆 Достижений: 317</label>
+                </div>
+                <div class="filter-group">
+                    <label>Показать</label>
+                    <label><input type="checkbox" checked> Установленные</label>
+                    <label><input type="checkbox"> Только избранное</label>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 8px;">Все игры</button>
+            </aside>
+
+            <main class="main-content">
+                <div class="catalog-header">
+                    <h2>Библиотека</h2>
+                    <div class="custom-select" data-custom-select>
+                        <button class="custom-select-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+                            <span class="custom-select-value">Недавно играли</span>
+                            <span class="custom-select-arrow" aria-hidden="true">▼</span>
+                        </button>
+                        <div class="custom-select-menu" role="listbox" tabindex="-1">
+                            <div class="custom-select-option selected" role="option" tabindex="-1" data-sort="recent" data-sort-scope="library">Недавно играли</div>
+                            <div class="custom-select-option" role="option" tabindex="-1" data-sort="alpha" data-sort-scope="library">По алфавиту</div>
+                            <div class="custom-select-option" role="option" tabindex="-1" data-sort="hours" data-sort-scope="library">По времени в игре</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="games-grid" id="libraryGrid"></div>
+            </main>
+        </div>
+    </section>
+
+    <!-- ===== КОРЗИНА ===== -->
+    <section class="tab-panel" data-panel="cart">
+        <div class="container single">
+            <div class="catalog-header">
+                <h2>Корзина</h2>
+                <span style="font-size:13px; color:var(--text-dim);" id="cartCountLabel">Пусто</span>
+            </div>
+            <div class="cart-layout">
+                <div class="cart-items" id="cartItems"></div>
+                <aside class="cart-summary">
+                    <h3>Итого к оплате</h3>
+                    <div class="cart-total" id="cartTotal">0 ₽</div>
+                    <button class="btn btn-primary" id="checkoutBtn" style="width:100%;">Оформить заказ</button>
+                    <p class="cart-note">Ключи активации придут на почту сразу после оплаты. Возврат — в течение 14 дней при условии, что игра не запускалась.</p>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== ПОДДЕРЖКА ===== -->
+    <section class="tab-panel" data-panel="support">
+        <div class="container single">
+            <div class="catalog-header">
+                <h2>Поддержка</h2>
+                <span style="font-size:13px; color:var(--text-dim);">Отвечаем в среднем за 2 часа</span>
+            </div>
+            <div class="support-layout">
+                <div class="faq">
+                    <div class="faq-item open">
+                        <div class="faq-q"><span>Как активировать ключ, купленный в ИгроМаркете?</span><span class="faq-chevron">▼</span></div>
+                        <div class="faq-a"><div>После оплаты ключ появляется в разделе «Библиотека» и дублируется на вашу почту. Откройте клиент платформы (Steam, Epic Games и т.д.), выберите «Активировать товар» и вставьте ключ.</div></div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><span>Можно ли вернуть игру, если она не запускается?</span><span class="faq-chevron">▼</span></div>
+                        <div class="faq-a"><div>Да. Если игра не запускается по техническим причинам, напишите в поддержку в течение 14 дней с момента покупки. Приложите описание ошибки и скриншот — мы поможем с решением или оформим возврат.</div></div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><span>Почему цена в корзине отличается от цены в каталоге?</span><span class="faq-chevron">▼</span></div>
+                        <div class="faq-a"><div>Цена в каталоге указана без учёта скидок по промокоду и персональных предложений. Итоговая стоимость всегда отображается в корзине перед оплатой.</div></div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-q"><span>Работают ли игры на нескольких компьютерах?</span><span class="faq-chevron">▼</span></div>
+                        <div class="faq-a"><div>Ключ привязывается к вашему аккаунту платформы. Вы можете установить игру на несколько устройств, но одновременно играть можно только на одном из них.</div></div>
+                    </div>
+                </div>
+                <form class="support-form" id="supportForm">
+                    <h3>Написать в поддержку</h3>
+                    <div class="field">
+                        <label for="sName">Имя</label>
+                        <input id="sName" type="text" placeholder="Как к вам обращаться?" required>
+                    </div>
+                    <div class="field">
+                        <label for="sEmail">E-mail</label>
+                        <input id="sEmail" type="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="field">
+                        <label for="sMsg">Сообщение</label>
+                        <textarea id="sMsg" placeholder="Опишите проблему как можно подробнее..." required></textarea>
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="width:100%;">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== СТРАНИЦА ИГРЫ ===== -->
+    <section class="tab-panel" data-panel="game">
+        <div class="container single">
+            <button class="back-btn" id="gameBack">← Назад</button>
+
+            <div class="game-detail">
+                <div class="game-detail-gallery">
+                    <div class="game-main-img-wrap">
+                        <img class="game-main-img" id="gdMainImg" src="" alt="">
+                        <button class="tile-arrow prev" id="gdPrev" aria-label="Назад">‹</button>
+                        <button class="tile-arrow next" id="gdNext" aria-label="Вперёд">›</button>
+                    </div>
+                    <div class="game-thumbs" id="gdThumbs"></div>
+                </div>
+                <div class="game-detail-info">
+                    <div class="game-detail-badge-row" id="gdBadges"></div>
+                    <h1 class="game-detail-title" id="gdTitle"></h1>
+                    <div class="game-detail-rating" id="gdRating"></div>
+                    <div class="game-detail-price" id="gdPrice"></div>
+                    <div class="game-detail-actions">
+                        <button class="btn btn-primary" id="gdAddToCart">В корзину</button>
+                        <button class="btn btn-outline" id="gdBuyNow">Купить сейчас</button>
+                    </div>
+                    <div class="game-detail-meta" id="gdMeta"></div>
+                    <h3 class="game-detail-subtitle">Описание</h3>
+                    <p class="game-detail-desc" id="gdDesc"></p>
+                </div>
+            </div>
+
+            <h3 class="related-title">Похожие игры</h3>
+            <div class="games-grid" id="relatedGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== ТОСТ ===== -->
+    <div class="toast" id="supportToast">
+        <span class="toast-check">✓</span>
+        <span id="toastMessage"></span>
+    </div>
+
+    <!-- ===== МОБИЛЬНЫЙ ПОИСК ===== -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-overlay-inner">
+            <input type="text" class="search-overlay-input" placeholder="Поиск в магазине...">
+            <button class="search-overlay-close" id="searchOverlayClose" aria-label="Закрыть поиск">✕</button>
+        </div>
+    </div>
+
+    <!-- ===== АВТОРИЗАЦИЯ ===== -->
+    <div class="auth-modal-overlay" id="authModalOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="auth-modal">
+            <button class="auth-modal-close" id="authModalClose" aria-label="Закрыть">✕</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" type="button" data-auth-tab="login" id="authTitle">Вход</button>
+                <button class="auth-tab" type="button" data-auth-tab="register">Регистрация</button>
+            </div>
+
+            <form class="auth-form" id="loginForm" novalidate>
+                <h3>Вход в аккаунт</h3>
+                <div class="field">
+                    <label for="loginEmail">E-mail</label>
+                    <input id="loginEmail" type="email" name="email" autocomplete="email" required>
+                </div>
+                <div class="field">
+                    <label for="loginPassword">Пароль</label>
+                    <input id="loginPassword" type="password" name="password" autocomplete="current-password" required>
+                </div>
+                <div class="auth-error" data-auth-error></div>
+                <button class="btn btn-primary" type="submit">Войти</button>
+            </form>
+
+            <form class="auth-form" id="registerForm" style="display:none" novalidate>
+                <h3>Создать аккаунт</h3>
+                <div class="field">
+                    <label for="regName">Имя</label>
+                    <input id="regName" type="text" name="name" autocomplete="name" required minlength="2" maxlength="40">
+                </div>
+                <div class="field">
+                    <label for="regEmail">E-mail</label>
+                    <input id="regEmail" type="email" name="email" autocomplete="email" required>
+                </div>
+                <div class="field">
+                    <label for="regPassword">Пароль</label>
+                    <input id="regPassword" type="password" name="password" autocomplete="new-password" required minlength="4">
+                </div>
+                <div class="field">
+                    <label for="regConfirm">Повторите пароль</label>
+                    <input id="regConfirm" type="password" name="confirm" autocomplete="new-password" required>
+                </div>
+                <div class="auth-error" data-auth-error></div>
+                <button class="btn btn-primary" type="submit">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        'use strict';
+
+        /* ==================== ДАННЫЕ ==================== */
+        const GAMES = [
+            {
+                id: 'cyberpunk-2077',
+                title: 'Киберпанк 2077',
+                genres: ['RPG', 'Экшен'],
+                platforms: ['PC', 'PlayStation 5'],
+                price: 1999,
+                rating: 4.5,
+                reviews: 1240,
+                badge: 'Хит продаж',
+                images: [
+                    'https://picsum.photos/seed/cyberpunk-a/900/560',
+                    'https://picsum.photos/seed/cyberpunk-b/900/560',
+                    'https://picsum.photos/seed/cyberpunk-c/900/560'
+                ],
+                description: 'Киберпанк 2077 — ролевая игра в открытом мире Найт-Сити, где вы играете наёмником по имени V. Технологии будущего, импланты, корпорации и банды — всё это формирует уникальный опыт.',
+                developer: 'CD Projekt Red',
+                releaseYear: 2020
+            },
+            {
+                id: 'witcher-3',
+                title: 'Ведьмак 3: Дикая Охота',
+                genres: ['RPG'],
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                price: 1299,
+                rating: 5.0,
+                reviews: 2180,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/witcher-a/900/560',
+                    'https://picsum.photos/seed/witcher-b/900/560',
+                    'https://picsum.photos/seed/witcher-c/900/560'
+                ],
+                description: 'Ведьмак 3 — легендарная RPG о Геральте из Ривии, охотнике на монстров. Огромный открытый мир, глубокий сюжет, моральные выборы и десятки часов приключений.',
+                developer: 'CD Projekt Red',
+                releaseYear: 2015
+            },
+            {
+                id: 'cs2',
+                title: 'Counter-Strike 2',
+                genres: ['Шутер'],
+                platforms: ['PC'],
+                price: 0,
+                rating: 4.2,
+                reviews: 5620,
+                badge: 'Бесплатно',
+                images: [
+                    'https://picsum.photos/seed/cs2/900/560',
+                    'https://picsum.photos/seed/cs2b/900/560',
+                    'https://picsum.photos/seed/cs2c/900/560'
+                ],
+                description: 'Counter-Strike 2 — обновлённая версия легендарного тактического шутера. Новый движок Source 2, переработанные карты и физика дыма. Классическая формула 5 на 5.',
+                developer: 'Valve',
+                releaseYear: 2023
+            },
+            {
+                id: 'stardew-valley',
+                title: 'Stardew Valley',
+                genres: ['Инди', 'Симулятор'],
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                price: 399,
+                rating: 4.9,
+                reviews: 3480,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/stardewvalley/900/560',
+                    'https://picsum.photos/seed/stardew-b/900/560',
+                    'https://picsum.photos/seed/stardew-c/900/560'
+                ],
+                description: 'Stardew Valley — уютный симулятор фермы. Ухаживайте за участком, заводите друзей в городке, исследуйте пещеры и стройте жизнь своей мечты.',
+                developer: 'ConcernedApe',
+                releaseYear: 2016
+            },
+            {
+                id: 'elden-ring',
+                title: 'Elden Ring',
+                genres: ['RPG', 'Экшен'],
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                price: 3999,
+                rating: 4.8,
+                reviews: 4120,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/eldenring/900/560',
+                    'https://picsum.photos/seed/elden-b/900/560',
+                    'https://picsum.photos/seed/elden-c/900/560'
+                ],
+                description: 'Elden Ring — фэнтезийный экшен-RPG от FromSoftware и Джорджа Р. Р. Мартина. Огромный мир Междуземья, сложные бои, глубокий лор и свобода исследования.',
+                developer: 'FromSoftware',
+                releaseYear: 2022
+            },
+            {
+                id: 'civ-6',
+                title: 'Civilization VI',
+                genres: ['Стратегия'],
+                platforms: ['PC'],
+                price: 2499,
+                rating: 4.7,
+                reviews: 1890,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/civ6/900/560',
+                    'https://picsum.photos/seed/civ6b/900/560',
+                    'https://picsum.photos/seed/civ6c/900/560'
+                ],
+                description: 'Civilization VI — пошаговая стратегия, где вы ведёте свою цивилизацию через века. Наука, культура, дипломатия и война — выберите свой путь к победе.',
+                developer: 'Firaxis Games',
+                releaseYear: 2016
+            },
+            {
+                id: 'hollow-knight',
+                title: 'Hollow Knight',
+                genres: ['Инди', 'Экшен'],
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                price: 599,
+                rating: 4.9,
+                reviews: 2340,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/hollowknight/900/560',
+                    'https://picsum.photos/seed/hollow-b/900/560',
+                    'https://picsum.photos/seed/hollow-c/900/560'
+                ],
+                description: 'Hollow Knight — мрачная метроидвания о рыцаре-жуке в подземном королевстве Халлоунест. Исследуйте лабиринты, сражайтесь с боссами и раскрывайте тайны.',
+                developer: 'Team Cherry',
+                releaseYear: 2017
+            },
+            {
+                id: 'hades',
+                title: 'Hades',
+                genres: ['Инди', 'Экшен'],
+                platforms: ['PC', 'PlayStation 5', 'Xbox Series X'],
+                price: 899,
+                rating: 4.8,
+                reviews: 1740,
+                badge: null,
+                images: [
+                    'https://picsum.photos/seed/hades/900/560',
+                    'https://picsum.photos/seed/hades-b/900/560',
+                    'https://picsum.photos/seed/hades-c/900/560'
+                ],
+                description: 'Hades — рогалик про побег из подземного царства. Каждый забег уникален, а смерть — не конец, а часть истории. Динамичные бои и яркий мир греческих мифов.',
+                developer: 'Supergiant Games',
+                releaseYear: 2020
+            }
+        ];
+
+        /* ==================== СОСТОЯНИЕ ==================== */
+        const state = {
+            cart: {},
+            library: {},
+            filters: { genres: new Set(), platforms: new Set(), minPrice: null, maxPrice: null },
+            sort: 'popular',
+            librarySort: 'recent',
+            currentGame: null,
+            previousPanel: 'catalog'
+        };
+
+        /* ==================== АВТОРИЗАЦИЯ ==================== */
+        const USERS_KEY = 'gamemarket-users';
+        const SESSION_KEY = 'gamemarket-session';
+
+        const auth = {
+            currentUser: null, // { name, email }
+            users: {}          // email -> { name, email, passwordHash }
+        };
+
+        function hashPassword(pw) {
+            // Учебный синхронный хеш с солью. Не криптостойкий, но для клиентского демо достаточно.
+            const salt = 'gamemarket::v1::salt';
+            const str = salt + pw + salt;
+            let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+            for (let i = 0; i < str.length; i++) {
+                const ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+            h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+            h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+            return (h2 >>> 0).toString(16).padStart(8, '0') +
+                   (h1 >>> 0).toString(16).padStart(8, '0');
+        }
+
+        function loadUsers() {
+            try {
+                const raw = localStorage.getItem(USERS_KEY);
+                auth.users = raw ? JSON.parse(raw) : {};
+            } catch (e) { auth.users = {}; }
+        }
+        function saveUsers() {
+            try { localStorage.setItem(USERS_KEY, JSON.stringify(auth.users)); } catch (e) {}
+        }
+        function loadSession() {
+            try {
+                const raw = localStorage.getItem(SESSION_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                if (data && data.email && auth.users[data.email]) {
+                    auth.currentUser = { name: auth.users[data.email].name, email: data.email };
+                }
+            } catch (e) {}
+        }
+        function saveSession() {
+            try {
+                if (auth.currentUser) localStorage.setItem(SESSION_KEY, JSON.stringify({ email: auth.currentUser.email }));
+                else localStorage.removeItem(SESSION_KEY);
+            } catch (e) {}
+        }
+
+        function getStorageKey() {
+            return auth.currentUser
+                ? `gamemarket-v3-user-${auth.currentUser.email}`
+                : 'gamemarket-v3';
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(getStorageKey(), JSON.stringify({ cart: state.cart, library: state.library }));
+            } catch (e) {}
+        }
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(getStorageKey());
+                if (!raw) return false;
+                const data = JSON.parse(raw);
+                state.cart = data.cart || {};
+                state.library = data.library || {};
+                return true;
+            } catch (e) { return false; }
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function registerUser(name, email, password) {
+            email = email.trim().toLowerCase();
+            name = name.trim();
+            if (!name) return { ok: false, error: 'Введите имя' };
+            if (!isValidEmail(email)) return { ok: false, error: 'Некорректный e-mail' };
+            if (password.length < 4) return { ok: false, error: 'Пароль должен быть не короче 4 символов' };
+            if (auth.users[email]) return { ok: false, error: 'Пользователь с таким e-mail уже существует' };
+
+            auth.users[email] = { name, email, passwordHash: hashPassword(password) };
+            saveUsers();
+
+            auth.currentUser = { name, email };
+            saveSession();
+            saveState(); // переносим текущее (гостевое) состояние в аккаунт
+
+            return { ok: true, user: auth.currentUser };
+        }
+
+        function loginUser(email, password) {
+            email = email.trim().toLowerCase();
+            const user = auth.users[email];
+            if (!user) return { ok: false, error: 'Пользователь не найден' };
+            if (user.passwordHash !== hashPassword(password)) return { ok: false, error: 'Неверный пароль' };
+
+            auth.currentUser = { name: user.name, email };
+            saveSession();
+            if (!loadState()) { state.cart = {}; state.library = {}; saveState(); }
+
+            return { ok: true, user: auth.currentUser };
+        }
+
+        function logoutUser() {
+            saveState(); // сохраняем данные пользователя
+            auth.currentUser = null;
+            saveSession();
+            if (!loadState()) {
+                state.cart = { 'cyberpunk-2077': 1, 'witcher-3': 1 };
+                state.library = {
+                    'cs2': { hours: 312, progress: 45 },
+                    'stardew-valley': { hours: 64, progress: 58 },
+                    'elden-ring': { hours: 121, progress: 83 },
+                    'civ-6': { hours: 47, progress: 37 }
+                };
+                saveState();
+            }
+        }
+
+        function getGame(id) { return GAMES.find(g => g.id === id); }
+
+        function formatPrice(p) {
+            return p === 0 ? 'Бесплатно' : p.toLocaleString('ru-RU') + ' ₽';
+        }
+        function plural(n, forms) {
+            const a = Math.abs(n) % 100, b = a % 10;
+            if (a > 10 && a < 20) return n + ' ' + forms[2];
+            if (b > 1 && b < 5) return n + ' ' + forms[1];
+            if (b === 1) return n + ' ' + forms[0];
+            return n + ' ' + forms[2];
+        }
+        function showToast(msg) {
+            const toast = document.getElementById('supportToast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        /* ==================== UI АВТОРИЗАЦИИ ==================== */
+        function updateAuthUI() {
+            const container = document.getElementById('userActions');
+            if (!container) return;
+            if (auth.currentUser) {
+                const initial = auth.currentUser.name.charAt(0).toUpperCase();
+                container.innerHTML = `
+                    <span class="user-greeting" title="${auth.currentUser.name}">
+                        <span class="user-avatar">${initial}</span>
+                        <span>${auth.currentUser.name}</span>
+                    </span>
+                    <button class="btn btn-outline" id="logoutBtn">Выйти</button>
+                `;
+                const logoutBtn = document.getElementById('logoutBtn');
+                if (logoutBtn) logoutBtn.addEventListener('click', () => {
+                    logoutUser();
+                    updateAuthUI();
+                    refreshAll();
+                    showToast('Вы вышли из аккаунта');
+                });
+            } else {
+                container.innerHTML = `
+                    <button class="btn btn-outline" id="loginBtn">Войти</button>
+                    <button class="btn btn-primary" id="registerBtn">Регистрация</button>
+                `;
+                const loginBtn = document.getElementById('loginBtn');
+                const registerBtn = document.getElementById('registerBtn');
+                if (loginBtn) loginBtn.addEventListener('click', () => openAuthModal('login'));
+                if (registerBtn) registerBtn.addEventListener('click', () => openAuthModal('register'));
+            }
+        }
+
+        function openAuthModal(tab) {
+            const overlay = document.getElementById('authModalOverlay');
+            if (!overlay) return;
+            overlay.classList.add('active');
+            switchAuthTab(tab || 'login');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                const inp = overlay.querySelector(tab === 'register' ? '#regName' : '#loginEmail');
+                if (inp) inp.focus();
+            }, 60);
+        }
+        function closeAuthModal() {
+            const overlay = document.getElementById('authModalOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('active');
+            overlay.querySelectorAll('[data-auth-error]').forEach(e => e.textContent = '');
+            document.body.style.overflow = '';
+        }
+        function switchAuthTab(tab) {
+            const login = document.getElementById('loginForm');
+            const register = document.getElementById('registerForm');
+            if (!login || !register) return;
+            const isLogin = tab === 'login';
+            login.style.display = isLogin ? '' : 'none';
+            register.style.display = isLogin ? 'none' : '';
+            document.querySelectorAll('[data-auth-tab]').forEach(b =>
+                b.classList.toggle('active', b.dataset.authTab === tab)
+            );
+            document.querySelectorAll('[data-auth-error]').forEach(e => e.textContent = '');
+        }
+        function requireAuth() {
+            if (auth.currentUser) return true;
+            showToast('Войдите или зарегистрируйтесь');
+            openAuthModal('login');
+            return false;
+        }
+        function refreshAll() {
+            renderCatalog();
+            renderLibrary();
+            renderCart();
+            updateCartBadge();
+        }
+
+        /* ==================== НАВИГАЦИЯ ==================== */
+        const nav = document.getElementById('mainNav');
+        const indicator = document.getElementById('navIndicator');
+        const headerLinks = Array.from(nav.querySelectorAll('.nav-link'));
+        const drawerLinks = Array.from(document.querySelectorAll('.mobile-drawer .nav-link'));
+        const allLinks = [...headerLinks, ...drawerLinks];
+        const panels = Array.from(document.querySelectorAll('.tab-panel'));
+
+        const drawer = document.getElementById('mobileDrawer');
+        const drawerOverlay = document.getElementById('drawerOverlay');
+        const burgerBtn = document.getElementById('burgerBtn');
+        const drawerClose = document.getElementById('drawerClose');
+
+        function placeUnder(link) {
+            if (!link) return;
+            indicator.style.width = link.offsetWidth + 'px';
+            indicator.style.transform = 'translateX(' + link.offsetLeft + 'px)';
+        }
+
+        function switchPanel(name) {
+            panels.forEach(p => p.classList.toggle('active', p.dataset.panel === name));
+            allLinks.forEach(l => l.classList.toggle('active', l.dataset.tab === name));
+            const navLink = headerLinks.find(l => l.dataset.tab === name);
+            if (navLink) {
+                indicator.style.opacity = '1';
+                placeUnder(navLink);
+            } else {
+                indicator.style.opacity = '0';
+            }
+            if (name !== 'game') state.previousPanel = name;
+        }
+
+        function activateNav(tab) {
+            switchPanel(tab);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (tab === 'catalog') setTimeout(checkCounters, 80);
+        }
+
+        function openDrawer() {
+            drawer.classList.add('active');
+            drawerOverlay.classList.add('active');
+            drawer.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDrawer() {
+            drawer.classList.remove('active');
+            drawerOverlay.classList.remove('active');
+            drawer.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+        }
+
+        headerLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                activateNav(link.dataset.tab);
+            });
+        });
+        drawerLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                closeDrawer();
+                activateNav(link.dataset.tab);
+            });
+        });
+        burgerBtn.addEventListener('click', openDrawer);
+        drawerClose.addEventListener('click', closeDrawer);
+        drawerOverlay.addEventListener('click', closeDrawer);
+
+        /* ==================== КАТАЛОГ ==================== */
+        function matchesFilters(game) {
+            const f = state.filters;
+            if (f.genres.size > 0 && !game.genres.some(g => f.genres.has(g))) return false;
+            if (f.platforms.size > 0 && !game.platforms.some(p => f.platforms.has(p))) return false;
+            if (f.minPrice != null && game.price < f.minPrice) return false;
+            if (f.maxPrice != null && game.price > f.maxPrice) return false;
+            return true;
+        }
+
+        function sortCatalog(games) {
+            const copy = [...games];
+            switch (state.sort) {
+                case 'price-asc': return copy.sort((a, b) => a.price - b.price);
+                case 'price-desc': return copy.sort((a, b) => b.price - a.price);
+                case 'date': return copy.sort((a, b) => b.releaseYear - a.releaseYear);
+                default: return copy.sort((a, b) => b.reviews - a.reviews);
+            }
+        }
+
+        function tileHTML(game, sizeClass) {
+            const badge = game.badge
+                ? `<div class="tile-badge${game.badge === 'Бесплатно' ? ' free' : ''}">${game.badge}</div>`
+                : '';
+            const dots = game.images.map((_, i) =>
+                `<span class="tile-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></span>`
+            ).join('');
+            return `
+                <article class="tile ${sizeClass}" data-id="${game.id}">
+                    <img class="tile-img" src="${game.images[0]}" alt="${game.title}" loading="lazy">
+                    <div class="tile-overlay"></div>
+                    <button class="tile-add" data-add="${game.id}" aria-label="В корзину">+</button>
+                    <div class="tile-dots">${dots}</div>
+                    <button class="tile-arrow prev" aria-label="Назад">‹</button>
+                    <button class="tile-arrow next" aria-label="Вперёд">›</button>
+                    <div class="tile-content">
+                        ${badge}
+                        <div class="tile-title">${game.title}</div>
+                        <div class="tile-meta">${game.genres.join(', ')} · ${game.platforms.join(' · ')}</div>
+                        <div class="tile-footer">
+                            <span class="tile-price">${formatPrice(game.price)}</span>
+                            <span class="tile-rating">⭐ ${game.rating}</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function bindTile(tile) {
+            const id = tile.dataset.id;
+            const game = getGame(id);
+            if (!game) return;
+            const img = tile.querySelector('.tile-img');
+            const dots = Array.from(tile.querySelectorAll('.tile-dot'));
+            const images = game.images;
+            let idx = 0;
+
+            function go(n) {
+                n = (n + images.length) % images.length;
+                idx = n;
+                img.src = images[n];
+                dots.forEach((d, i) => d.classList.toggle('active', i === n));
+            }
+
+            tile.querySelector('.tile-arrow.prev').addEventListener('click', e => { e.stopPropagation(); go(idx - 1); });
+            tile.querySelector('.tile-arrow.next').addEventListener('click', e => { e.stopPropagation(); go(idx + 1); });
+            dots.forEach((d, i) => d.addEventListener('click', e => { e.stopPropagation(); go(i); }));
+
+            const addBtn = tile.querySelector('.tile-add');
+            addBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                addToCart(id);
+            });
+
+            tile.addEventListener('click', e => {
+                if (e.target.closest('.tile-add, .tile-arrow, .tile-dot')) return;
+                openGame(id);
+            });
+        }
+
+        function renderCatalog() {
+            const grid = document.getElementById('bentoGrid');
+            if (!grid) return;
+            const filtered = sortCatalog(GAMES.filter(matchesFilters));
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Ничего не найдено. Попробуйте изменить фильтры.</div>';
+                return;
+            }
+
+            grid.innerHTML = filtered.map((g, i) => {
+                let size = 'tile-small';
+                if (i === 0) size = 'tile-large';
+                else if (i === 3) size = 'tile-wide';
+                return tileHTML(g, size);
+            }).join('');
+
+            grid.querySelectorAll('.tile').forEach(bindTile);
+            updateTileAddButtons();
+        }
+
+        function updateTileAddButtons() {
+            document.querySelectorAll('.tile-add').forEach(btn => {
+                const id = btn.dataset.add;
+                const inCart = state.cart[id] > 0;
+                btn.textContent = inCart ? '✓' : '+';
+                btn.classList.toggle('in-cart', inCart);
+                btn.setAttribute('aria-label', inCart ? 'В корзине' : 'В корзину');
+            });
+        }
+
+        /* ==================== БИБЛИОТЕКА ==================== */
+        function renderLibrary() {
+            const grid = document.getElementById('libraryGrid');
+            if (!grid) return;
+            const ids = Object.keys(state.library);
+            const countEl = document.getElementById('libGameCount');
+            if (countEl) countEl.textContent = ids.length;
+
+            if (ids.length === 0) {
+                grid.innerHTML = '<div class="empty-state">Библиотека пуста. Купите игру в каталоге, чтобы начать играть.</div>';
+                return;
+            }
+
+            let entries = ids.map(id => ({ game: getGame(id), lib: state.library[id] })).filter(e => e.game);
+            if (state.librarySort === 'alpha') {
+                entries.sort((a, b) => a.game.title.localeCompare(b.game.title));
+            } else if (state.librarySort === 'hours') {
+                entries.sort((a, b) => b.lib.hours - a.lib.hours);
+            }
+
+            grid.innerHTML = entries.map(({ game, lib }) => `
+                <div class="game-card" data-id="${game.id}">
+                    <img class="game-cover" src="${game.images[0]}" alt="${game.title}" loading="lazy">
+                    <div class="game-info">
+                        <div class="game-title">${game.title}</div>
+                        <div class="game-genre">${game.genres.join(', ')}</div>
+                        <div class="lib-meta"><span>Проведено</span><span>${lib.hours} ч</span></div>
+                        <div class="lib-progress"><span style="width: ${lib.progress}%;"></span></div>
+                        <button class="btn-play" data-play="${game.id}">Играть</button>
+                    </div>
+                </div>
+            `).join('');
+
+            grid.querySelectorAll('.game-card').forEach(card => {
+                card.addEventListener('click', e => {
+                    if (e.target.closest('.btn-play')) return;
+                    openGame(card.dataset.id);
+                });
+            });
+            grid.querySelectorAll('.btn-play').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const id = btn.dataset.play;
+                    const lib = state.library[id];
+                    if (!lib) return;
+                    lib.hours += 1;
+                    lib.progress = Math.min(100, lib.progress + 2);
+                    saveState();
+                    renderLibrary();
+                    showToast(`Запуск: ${getGame(id).title} (+1 ч)`);
+                });
+            });
+        }
+
+        /* ==================== КОРЗИНА ==================== */
+        function cartCount() {
+            return Object.values(state.cart).reduce((s, n) => s + n, 0);
+        }
+
+        function updateCartBadge() {
+            const n = cartCount();
+            document.querySelectorAll('[data-cart-count]').forEach(el => {
+                el.textContent = n;
+                el.style.display = n > 0 ? '' : 'none';
+            });
+        }
+
+        function addToCart(id) {
+            const game = getGame(id);
+            if (!game) return;
+            state.cart[id] = (state.cart[id] || 0) + 1;
+            saveState();
+            updateCartBadge();
+            renderCart();
+            updateTileAddButtons();
+            showToast(`«${game.title}» добавлен в корзину`);
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const totalEl = document.getElementById('cartTotal');
+            const countEl = document.getElementById('cartCountLabel');
+            if (!container) return;
+
+            const ids = Object.keys(state.cart);
+            const entries = ids.map(id => ({ game: getGame(id), qty: state.cart[id] })).filter(e => e.game);
+            const totalQty = cartCount();
+
+            if (countEl) {
+                countEl.textContent = totalQty === 0 ? 'Пусто' : plural(totalQty, ['товар', 'товара', 'товаров']);
+            }
+
+            if (entries.length === 0) {
+                container.innerHTML = '<div class="empty-state">Корзина пуста. Перейдите в каталог и добавьте игры.</div>';
+                if (totalEl) totalEl.textContent = '0 ₽';
+                updateCartBadge();
+                return;
+            }
+
+            container.innerHTML = entries.map(({ game, qty }) => `
+                <div class="cart-item" data-id="${game.id}">
+                    <img src="${game.images[0]}" alt="${game.title}">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${game.title}</div>
+                        <div class="cart-item-genre">${game.genres.join(', ')} · ${game.platforms[0]}</div>
+                        <div class="qty">
+                            <button class="qty-minus" data-act="minus" data-id="${game.id}">−</button>
+                            <span class="qty-val">${qty}</span>
+                            <button class="qty-plus" data-act="plus" data-id="${game.id}">+</button>
+                        </div>
+                    </div>
+                    <div class="cart-item-price">${(game.price * qty).toLocaleString('ru-RU')} ₽</div>
+                    <button class="cart-remove" data-act="remove" data-id="${game.id}" aria-label="Удалить">✕</button>
+                </div>
+            `).join('');
+
+            const total = entries.reduce((s, { game, qty }) => s + game.price * qty, 0);
+            if (totalEl) totalEl.textContent = total.toLocaleString('ru-RU') + ' ₽';
+
+            container.querySelectorAll('[data-act]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const { act, id } = btn.dataset;
+                    if (act === 'plus') state.cart[id]++;
+                    else if (act === 'minus') {
+                        state.cart[id]--;
+                        if (state.cart[id] <= 0) delete state.cart[id];
+                    } else if (act === 'remove') {
+                        delete state.cart[id];
+                    }
+                    saveState();
+                    renderCart();
+                    updateCartBadge();
+                    updateTileAddButtons();
+                });
+            });
+
+            updateCartBadge();
+        }
+
+        /* ==================== СТРАНИЦА ИГРЫ ==================== */
+        function openGame(id) {
+            const game = getGame(id);
+            if (!game) return;
+            state.currentGame = id;
+            renderGameDetail(game);
+            switchPanel('game');
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+
+        function closeGame() {
+            switchPanel(state.previousPanel || 'catalog');
+            state.currentGame = null;
+            window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+
+        function renderGameDetail(game) {
+            document.getElementById('gdTitle').textContent = game.title;
+            document.getElementById('gdRating').textContent = `⭐ ${game.rating} · ${game.reviews} отзывов`;
+            document.getElementById('gdPrice').textContent = formatPrice(game.price);
+            document.getElementById('gdDesc').textContent = game.description;
+            document.getElementById('gdMainImg').src = game.images[0];
+
+            const badges = document.getElementById('gdBadges');
+            badges.innerHTML = game.badge
+                ? `<span class="tile-badge${game.badge === 'Бесплатно' ? ' free' : ''}">${game.badge}</span>`
+                : '';
+
+            document.getElementById('gdMeta').innerHTML = `
+                <div class="game-detail-meta-row"><span>Разработчик</span><span>${game.developer}</span></div>
+                <div class="game-detail-meta-row"><span>Дата выхода</span><span>${game.releaseYear}</span></div>
+                <div class="game-detail-meta-row"><span>Жанры</span><span>${game.genres.join(', ')}</span></div>
+                <div class="game-detail-meta-row"><span>Платформы</span><span>${game.platforms.join(', ')}</span></div>
+            `;
+
+            const thumbs = document.getElementById('gdThumbs');
+            thumbs.innerHTML = game.images.map((src, i) =>
+                `<img class="game-thumb${i === 0 ? ' active' : ''}" src="${src}" data-idx="${i}" alt="">`
+            ).join('');
+
+            let gIdx = 0;
+            const mainImg = document.getElementById('gdMainImg');
+            function goGallery(n) {
+                n = (n + game.images.length) % game.images.length;
+                gIdx = n;
+                mainImg.src = game.images[n];
+                thumbs.querySelectorAll('.game-thumb').forEach((t, i) => {
+                    t.classList.toggle('active', i === n);
+                });
+            }
+            thumbs.querySelectorAll('.game-thumb').forEach(t => {
+                t.addEventListener('click', () => goGallery(Number(t.dataset.idx)));
+            });
+            document.getElementById('gdPrev').onclick = () => goGallery(gIdx - 1);
+            document.getElementById('gdNext').onclick = () => goGallery(gIdx + 1);
+
+            document.getElementById('gdAddToCart').onclick = () => addToCart(game.id);
+
+            document.getElementById('gdBuyNow').onclick = () => {
+                if (!requireAuth()) return;
+                if (state.library[game.id]) {
+                    showToast(`«${game.title}» уже в библиотеке`);
+                    return;
+                }
+                state.library[game.id] = { hours: 0, progress: 0 };
+                saveState();
+                renderLibrary();
+                showToast(`«${game.title}» куплен! Игра в библиотеке.`);
+            };
+
+            const related = GAMES
+                .filter(g => g.id !== game.id && g.genres.some(gen => game.genres.includes(gen)))
+                .slice(0, 4);
+            const relGrid = document.getElementById('relatedGrid');
+            if (related.length === 0) {
+                relGrid.innerHTML = '<div class="empty-state">Похожих игр нет</div>';
+            } else {
+                relGrid.innerHTML = related.map(g => `
+                    <div class="game-card" data-id="${g.id}">
+                        <img class="game-cover" src="${g.images[0]}" alt="${g.title}" loading="lazy">
+                        <div class="game-info">
+                            <div class="game-title">${g.title}</div>
+                            <div class="game-genre">${g.genres.join(', ')}</div>
+                            <div class="lib-meta">
+                                <span class="tile-price">${formatPrice(g.price)}</span>
+                                <span class="tile-rating">⭐ ${g.rating}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                relGrid.querySelectorAll('.game-card').forEach(card => {
+                    card.addEventListener('click', () => openGame(card.dataset.id));
+                });
+            }
+        }
+
+        /* ==================== ФИЛЬТРЫ ==================== */
+        function bindFilters() {
+            document.querySelectorAll('[data-filter="genre"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (cb.checked) state.filters.genres.add(cb.value);
+                    else state.filters.genres.delete(cb.value);
+                    renderCatalog();
+                });
+            });
+            document.querySelectorAll('[data-filter="platform"]').forEach(cb => {
+                cb.addEventListener('change', () => {
+                    if (cb.checked) state.filters.platforms.add(cb.value);
+                    else state.filters.platforms.delete(cb.value);
+                    renderCatalog();
+                });
+            });
+
+            const minP = document.getElementById('minPrice');
+            const maxP = document.getElementById('maxPrice');
+            if (minP) minP.addEventListener('input', () => {
+                state.filters.minPrice = minP.value ? Number(minP.value) : null;
+                renderCatalog();
+            });
+            if (maxP) maxP.addEventListener('input', () => {
+                state.filters.maxPrice = maxP.value ? Number(maxP.value) : null;
+                renderCatalog();
+            });
+
+            const resetBtn = document.getElementById('resetFilters');
+            if (resetBtn) resetBtn.addEventListener('click', () => {
+                state.filters.genres.clear();
+                state.filters.platforms.clear();
+                state.filters.minPrice = null;
+                state.filters.maxPrice = null;
+                document.querySelectorAll('[data-filter]').forEach(cb => { cb.checked = false; });
+                if (minP) minP.value = '';
+                if (maxP) maxP.value = '';
+                renderCatalog();
+            });
+        }
+
+        /* ==================== КАСТОМНЫЙ SELECT ==================== */
+        function initCustomSelect(selectEl, onSelect) {
+            const trigger = selectEl.querySelector('.custom-select-trigger');
+            const valueEl = selectEl.querySelector('.custom-select-value');
+            const menu = selectEl.querySelector('.custom-select-menu');
+            const options = Array.from(selectEl.querySelectorAll('.custom-select-option'));
+
+            function close() {
+                selectEl.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+            }
+            function open() {
+                document.querySelectorAll('[data-custom-select].open').forEach(s => {
+                    if (s !== selectEl) {
+                        s.classList.remove('open');
+                        const t = s.querySelector('.custom-select-trigger');
+                        if (t) t.setAttribute('aria-expanded', 'false');
+                    }
+                });
+                selectEl.classList.add('open');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+
+            trigger.addEventListener('click', e => {
+                e.stopPropagation();
+                selectEl.classList.contains('open') ? close() : open();
+            });
+
+            options.forEach(opt => {
+                opt.addEventListener('click', e => {
+                    e.stopPropagation();
+                    options.forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    valueEl.textContent = opt.textContent.trim();
+                    close();
+                    trigger.focus();
+                    if (onSelect) onSelect(opt);
+                });
+            });
+
+            trigger.addEventListener('keydown', e => {
+                if (['Enter', ' ', 'ArrowDown'].includes(e.key)) {
+                    e.preventDefault();
+                    open();
+                    const sel = selectEl.querySelector('.custom-select-option.selected');
+                    (sel || options[0]).focus();
+                } else if (e.key === 'Escape') close();
+            });
+            menu.addEventListener('keydown', e => {
+                const cur = document.activeElement;
+                const i = options.indexOf(cur);
+                if (e.key === 'ArrowDown') { e.preventDefault(); (options[i + 1] || options[0]).focus(); }
+                else if (e.key === 'ArrowUp') { e.preventDefault(); (options[i - 1] || options[options.length - 1]).focus(); }
+                else if (e.key === 'Escape') { e.preventDefault(); close(); trigger.focus(); }
+                else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (cur && cur.classList.contains('custom-select-option')) cur.click();
+                } else if (e.key === 'Tab') close();
+            });
+        }
+
+        /* ==================== СЧЁТЧИКИ ==================== */
+        const counters = new WeakSet();
+        function animateCounter(el) {
+            const target = Number(el.dataset.counter);
+            const duration = 900;
+            const start = performance.now();
+            function frame(now) {
+                const p = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.round(target * eased).toLocaleString('ru-RU');
+                if (p < 1) requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame);
+        }
+        function checkCounters() {
+            document.querySelectorAll('[data-counter]').forEach(el => {
+                if (counters.has(el)) return;
+                const r = el.getBoundingClientRect();
+                if (r.top < window.innerHeight && r.bottom > 0) {
+                    counters.add(el);
+                    animateCounter(el);
+                }
+            });
+        }
+
+        /* ==================== ИНИЦИАЛИЗАЦИЯ ==================== */
+        function init() {
+            loadUsers();
+            loadSession();
+
+            if (!loadState()) {
+                state.cart = { 'cyberpunk-2077': 1, 'witcher-3': 1 };
+                state.library = {
+                    'cs2': { hours: 312, progress: 45 },
+                    'stardew-valley': { hours: 64, progress: 58 },
+                    'elden-ring': { hours: 121, progress: 83 },
+                    'civ-6': { hours: 47, progress: 37 }
+                };
+                saveState();
+            }
+
+            // Очищаем возможные устаревшие id
+            Object.keys(state.cart).forEach(id => { if (!getGame(id)) delete state.cart[id]; });
+            Object.keys(state.library).forEach(id => { if (!getGame(id)) delete state.library[id]; });
+
+            renderCatalog();
+            renderLibrary();
+            renderCart();
+            updateCartBadge();
+            bindFilters();
+
+            // Кастомные селекты
+            document.querySelectorAll('[data-custom-select]').forEach(sel => {
+                initCustomSelect(sel, opt => {
+                    if (opt.dataset.sortScope === 'library') {
+                        state.librarySort = opt.dataset.sort;
+                        renderLibrary();
+                    } else if (opt.dataset.sort) {
+                        state.sort = opt.dataset.sort;
+                        renderCatalog();
+                    }
+                });
+            });
+
+            document.addEventListener('click', () => {
+                document.querySelectorAll('[data-custom-select].open').forEach(s => {
+                    s.classList.remove('open');
+                    const t = s.querySelector('.custom-select-trigger');
+                    if (t) t.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // Оформить заказ
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            if (checkoutBtn) checkoutBtn.addEventListener('click', () => {
+                if (!requireAuth()) return;
+                const ids = Object.keys(state.cart);
+                if (ids.length === 0) { showToast('Корзина пуста'); return; }
+                let added = 0;
+                ids.forEach(id => {
+                    if (!state.library[id]) { state.library[id] = { hours: 0, progress: 0 }; added++; }
+                });
+                state.cart = {};
+                saveState();
+                renderCart();
+                renderLibrary();
+                updateCartBadge();
+                updateTileAddButtons();
+                showToast(added > 0 ? `Заказ оформлен! Новых игр в библиотеке: ${added}` : 'Заказ оформлен!');
+            });
+
+            // Назад со страницы игры
+            const backBtn = document.getElementById('gameBack');
+            if (backBtn) backBtn.addEventListener('click', closeGame);
+
+            document.addEventListener('keydown', e => {
+                if (e.key === 'Escape' && state.currentGame) closeGame();
+            });
+
+            // FAQ
+            document.querySelectorAll('.faq-q').forEach(q => {
+                q.addEventListener('click', () => q.parentElement.classList.toggle('open'));
+            });
+
+            // Поддержка
+            const form = document.getElementById('supportForm');
+            if (form) form.addEventListener('submit', e => {
+                e.preventDefault();
+                form.reset();
+                showToast('Спасибо! Обращение отправлено — ответ придёт на почту.');
+            });
+
+            // Мобильный поиск
+            const searchBtn = document.getElementById('mobileSearchBtn');
+            const searchOverlay = document.getElementById('searchOverlay');
+            const searchClose = document.getElementById('searchOverlayClose');
+            if (searchBtn && searchOverlay) {
+                searchBtn.addEventListener('click', () => {
+                    searchOverlay.classList.add('active');
+                    const inp = searchOverlay.querySelector('.search-overlay-input');
+                    if (inp) setTimeout(() => inp.focus(), 50);
+                });
+                searchClose.addEventListener('click', () => searchOverlay.classList.remove('active'));
+                searchOverlay.addEventListener('click', e => {
+                    if (e.target === searchOverlay) searchOverlay.classList.remove('active');
+                });
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
+                        searchOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+            /* ===== АВТОРИЗАЦИЯ: UI И ОБРАБОТЧИКИ ===== */
+            updateAuthUI();
+
+            const authOverlay = document.getElementById('authModalOverlay');
+            if (authOverlay) {
+                document.getElementById('authModalClose').addEventListener('click', closeAuthModal);
+                authOverlay.addEventListener('click', e => {
+                    if (e.target === authOverlay) closeAuthModal();
+                });
+                document.querySelectorAll('[data-auth-tab]').forEach(btn => {
+                    btn.addEventListener('click', () => switchAuthTab(btn.dataset.authTab));
+                });
+
+                // Вход
+                document.getElementById('loginForm').addEventListener('submit', e => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const errEl = form.querySelector('[data-auth-error]');
+                    const email = form.email.value;
+                    const pwd = form.password.value;
+                    if (!email || !pwd) { errEl.textContent = 'Заполните все поля'; return; }
+                    const res = loginUser(email, pwd);
+                    if (!res.ok) { errEl.textContent = res.error; return; }
+                    form.reset();
+                    closeAuthModal();
+                    updateAuthUI();
+                    refreshAll();
+                    showToast(`С возвращением, ${res.user.name}!`);
+                });
+
+                // Регистрация
+                document.getElementById('registerForm').addEventListener('submit', e => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const errEl = form.querySelector('[data-auth-error]');
+                    const name = form.name.value;
+                    const email = form.email.value;
+                    const pwd = form.password.value;
+                    const confirm = form.confirm.value;
+                    if (!name || !email || !pwd || !confirm) { errEl.textContent = 'Заполните все поля'; return; }
+                    if (pwd !== confirm) { errEl.textContent = 'Пароли не совпадают'; return; }
+                    const res = registerUser(name, email, pwd);
+                    if (!res.ok) { errEl.textContent = res.error; return; }
+                    form.reset();
+                    closeAuthModal();
+                    updateAuthUI();
+                    refreshAll();
+                    showToast(`Добро пожаловать, ${res.user.name}!`);
+                });
+
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Escape' && authOverlay.classList.contains('active')) closeAuthModal();
+                });
+            }
+
+            // Индикатор навигации
+            const activeLink = headerLinks.find(l => l.classList.contains('active')) || headerLinks[0];
+            if (activeLink) placeUnder(activeLink);
+
+            let rt;
+            window.addEventListener('resize', () => {
+                clearTimeout(rt);
+                rt = setTimeout(() => {
+                    const cur = headerLinks.find(l => l.classList.contains('active'));
+                    if (cur) placeUnder(cur);
+                }, 120);
+            });
+
+            // Статистика
+            window.addEventListener('load', checkCounters);
+            window.addEventListener('scroll', checkCounters, { passive: true });
+            checkCounters();
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>
